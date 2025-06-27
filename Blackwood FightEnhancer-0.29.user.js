@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Blackwood FightEnhancer
 // @namespace    http://tampermonkey.net/
-// @version      0.29
+// @version      0.31
 // @description  Мод для улучшенного опыта в аб
 // @copyright    2025, fifthrank
 // @license      MIT
