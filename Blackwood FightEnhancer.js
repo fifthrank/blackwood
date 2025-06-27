@@ -9,8 +9,8 @@
 // @grant        GM_addStyle
 // @grant        GM_getValue
 // @grant        GM_setValue
-// @downloadURL  https://github.com/fifthrank/blackwood/raw/refs/heads/main/Blackwood%20FightEnhancer-0.29.user.js
-// @updateURL    https://github.com/fifthrank/blackwood/raw/refs/heads/main/Blackwood%20FightEnhancer-0.29.user.js
+// @downloadURL  https://raw.githubusercontent.com/fifthrank/blackwood/refs/heads/main/Blackwood%20FightEnhancer.js
+// @updateURL    https://raw.githubusercontent.com/fifthrank/blackwood/refs/heads/main/Blackwood%20FightEnhancer.jss
 // ==/UserScript==
 
 (function() {
