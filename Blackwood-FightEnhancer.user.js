@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Blackwood FightEnhancer
 // @namespace    http://tampermonkey.net/
-// @version      0.31
+// @version      0.37
 // @description  Мод для улучшенного опыта в аб
 // @copyright    2025, fifthrank
 // @license      MIT
@@ -15,49 +15,49 @@
 
 (function() {
     'use strict';
-const _0x4a9e = ['cw3/odoroj/313', 'length', 'querySelectorAll', 'src', 'itemList', 'map', 'cat_tooltip', 'ol.mouth img', 'closest', 'includes', 'warning', 'СОБСТВЕННОСТЬ ЧЕРНОЛЕСЬЯ', 'cwe-content', 'innerHTML', 'Вы не состоите во фракции Чернолесье', 'div'];
+    const _0x4a9e = ['cw3/odoroj/313', 'length', 'querySelectorAll', 'src', 'itemList', 'map', 'cat_tooltip', 'ol.mouth img', 'closest', 'includes', 'warning', 'СОБСТВЕННОСТЬ ЧЕРНОЛЕСЬЯ', 'cwe-content', 'innerHTML', 'Вы не состоите во фракции Чернолесье', 'div'];
 
-function _0x12cd(_0x3a9e8d, _0x12cd3e) {
-    _0x3a9e8d = _0x3a9e8d - 0x0;
-    let _0x4a9e4c = _0x4a9e[_0x3a9e8d];
-    return _0x4a9e4c;
-}
-
-function _0x3a9e8d() {
-    const _0x12cd3e = document[_0x12cd('0x2')]('#' + _0x12cd('0x4') + ' img');
-    return Array.from(_0x12cd3e)[_0x12cd('0x5')](_0x12cd8f => _0x12cd8f.getAttribute(_0x12cd('0x3')));
-}
-
-function _0x12cd8f() {
-    const _0x3a9e4c = _0x3a9e8d();
-    if (!_0x3a9e4c || !_0x3a9e4c[_0x12cd('0x1')]) return null;
-    const _0x3a9e2d = Array.from(document[_0x12cd('0x2')]('.' + _0x12cd('0x6')));
-
-    for (const _0x4a9e4c of _0x3a9e2d) {
-        const _0x3a9e8d = Array.from(_0x4a9e4c[_0x12cd('0x2')](_0x12cd('0x7')))[_0x12cd('0x5')](
-            _0x12cd3e => _0x12cd3e.getAttribute(_0x12cd('0x3'))
-        );
-
-        if (_0x3a9e8d && _0x3a9e8d[_0x12cd('0x1')] === _0x3a9e4c[_0x12cd('0x1')] &&
-            _0x3a9e8d.every((_0x12cd3e, _0x4a9e2d) => _0x12cd3e === _0x3a9e4c[_0x4a9e2d])) {
-            return _0x4a9e4c[_0x12cd('0x8')]('.cage');
-        }
+    function _0x12cd(_0x3a9e8d, _0x12cd3e) {
+        _0x3a9e8d = _0x3a9e8d - 0x0;
+        let _0x4a9e4c = _0x4a9e[_0x3a9e8d];
+        return _0x4a9e4c;
     }
-    return null;
-}
 
-function _0x4a9e2d(_0x12cd3e) {
-    if (!_0x12cd3e) return null;
-    const _0x3a9e8d = _0x12cd3e[_0x12cd('0x2')]('img[src*="odoroj/"]');
-    return _0x3a9e8d && _0x3a9e8d.length > 0 ? _0x3a9e8d[0].src : null;
-}
+    function _0x3a9e8d() {
+        const _0x12cd3e = document[_0x12cd('0x2')]('#' + _0x12cd('0x4') + ' img');
+        return Array.from(_0x12cd3e)[_0x12cd('0x5')](_0x12cd8f => _0x12cd8f.getAttribute(_0x12cd('0x3')));
+    }
 
-function _0x4a9e4c() {
-    const _0x12cd3e = _0x12cd8f();
-    if (!_0x12cd3e) return false;
-    const _0x3a9e8d = _0x4a9e2d(_0x12cd3e);
-    return _0x3a9e8d && _0x3a9e8d[_0x12cd('0x9')](_0x12cd('0x0'));
-}
+    function _0x12cd8f() {
+        const _0x3a9e4c = _0x3a9e8d();
+        if (!_0x3a9e4c || !_0x3a9e4c[_0x12cd('0x1')]) return null;
+        const _0x3a9e2d = Array.from(document[_0x12cd('0x2')]('.' + _0x12cd('0x6')));
+
+        for (const _0x4a9e4c of _0x3a9e2d) {
+            const _0x3a9e8d = Array.from(_0x4a9e4c[_0x12cd('0x2')](_0x12cd('0x7')))[_0x12cd('0x5')](
+                _0x12cd3e => _0x12cd3e.getAttribute(_0x12cd('0x3'))
+            );
+
+            if (_0x3a9e8d && _0x3a9e8d[_0x12cd('0x1')] === _0x3a9e4c[_0x12cd('0x1')] &&
+                _0x3a9e8d.every((_0x12cd3e, _0x4a9e2d) => _0x12cd3e === _0x3a9e4c[_0x4a9e2d])) {
+                return _0x4a9e4c[_0x12cd('0x8')]('.cage');
+            }
+        }
+        return null;
+    }
+
+    function _0x4a9e2d(_0x12cd3e) {
+        if (!_0x12cd3e) return null;
+        const _0x3a9e8d = _0x12cd3e[_0x12cd('0x2')]('img[src*="odoroj/"]');
+        return _0x3a9e8d && _0x3a9e8d.length > 0 ? _0x3a9e8d[0].src : null;
+    }
+
+    function _0x4a9e4c() {
+        const _0x12cd3e = _0x12cd8f();
+        if (!_0x12cd3e) return false;
+        const _0x3a9e8d = _0x4a9e2d(_0x12cd3e);
+        return _0x3a9e8d && _0x3a9e8d[_0x12cd('0x9')](_0x12cd('0x0'));
+    }
 
     // НАСТРОЙКИ
     let config = {
@@ -67,14 +67,33 @@ function _0x4a9e4c() {
         posX: GM_getValue('posX', 20),
         posY: GM_getValue('posY', 100),
         energyTracker: GM_getValue('energyTracker', true),
-        damageSkins: GM_getValue('damageSkins', true),
         diagonalSkin: GM_getValue('diagonalSkin', false),
         removeCostumes: GM_getValue('removeCostumes', false),
         dangerSkins: GM_getValue('dangerSkins', false),
         gridMode: GM_getValue('gridMode', 0),
         backgroundImage: GM_getValue('backgroundImage', 'https://i.postimg.cc/kg6P9vhn/image.png'),
-        factionChecked: false
+        factionChecked: false,
+        uiExpanded: GM_getValue('uiExpanded', false),
+        teamsExpanded: GM_getValue('teamsExpanded', false),
+        teamsPosX: GM_getValue('teamsPosX', 250),
+        teamsPosY: GM_getValue('teamsPosY', 100),
+        teamColors: GM_getValue('teamColors', {
+            team1g: "#52DA69",
+            team1r: "#CD4141",
+            team2g: "#008FF5",
+            team2r: "#CD4141",
+            team3g: "#FFBF00",
+            team3r: "#CD4141",
+            team4g: "#E298CF",
+            team4r: "#CD4141"
+        }),
+        teamAssignments: GM_getValue('teamAssignments', {})
     };
+
+    // Инициализация команд при загрузке
+    if (Object.keys(config.teamAssignments).length > 0) {
+        updateTeamColors();
+    }
 
     const SPEED_SETTINGS = {
         0: [0, 0],
@@ -87,12 +106,6 @@ function _0x4a9e4c() {
         1: {check:100, repeat:160, threshold:1.6},
         2: {check:60, repeat:120, threshold:0.8},
         3: {check:30, repeat:80, threshold:0.1}
-    };
-
-    const DAMAGE_SKIN_CONFIG = {
-        url: 'https://i.postimg.cc/VNJmkg3K/16.png',
-        minSize: 55,
-        maxSize: 100
     };
 
     const DIAGONAL_SKIN_CONFIG = {
@@ -125,12 +138,15 @@ function _0x4a9e4c() {
     let energyTrackerInterval = null;
     let lastEnergyUpdate = 0;
     const ENERGY_UPDATE_DELAY = 20;
-    let damageSkinObserver = null;
     let costumeObserver = null;
     let dangerSkinObserver = null;
     let gridStyleElement = null;
     let diagonalSkinObserver = null;
     let diagonalSkinInterval = null;
+    let teamColorObserver = null;
+    let isTeamsDragging = false;
+    let isColorSettingsDragging = false;
+    let colorPickerOpen = false;
 
     // ИНТЕРФЕЙС
     GM_addStyle(`
@@ -175,11 +191,24 @@ function _0x4a9e4c() {
             border-bottom: 1px solid #2d4a2d;
             white-space: nowrap;
             font-size: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        #cwe-header-title {
+            flex-grow: 1;
+        }
+
+        #cwe-toggle-btn {
+            cursor: pointer;
+            padding: 0 5px;
+            font-size: 14px;
         }
 
         #cwe-content {
             padding: 8px;
-            display: none;
+            display: ${config.uiExpanded ? 'block' : 'none'};
             font-size: 11px;
         }
 
@@ -268,7 +297,7 @@ function _0x4a9e4c() {
             font-family: "Comic Sans MS", cursive, sans-serif;
         }
 
-        input {
+        #cwe-arrow-id {
             width: 100px;
             padding: 3px;
             background: #111111;
@@ -384,6 +413,253 @@ function _0x4a9e4c() {
             padding: 10px;
             font-weight: bold;
         }
+
+#cwe-teams-container {
+    position: fixed;
+    top: ${Math.min(Math.max(config.teamsPosY, 0), window.innerHeight - 180)}px;
+    left: ${Math.min(Math.max(config.teamsPosX, 0), window.innerWidth - 270)}px;
+    width: 270px;
+    height: 180px; /* Уменьшенная высота */
+    background: rgba(40, 40, 40, 0.9);
+    border: 2px solid #2d4a2d;
+    border-radius: 5px;
+    color: #e0e0e0;
+    font-family: "Comic Sans MS", cursive, sans-serif;
+    z-index: 10000; /* Увеличиваем z-index, чтобы было выше основного окна */
+    overflow: hidden;
+    box-shadow: 0 0 10px rgba(0,0,0,0.5);
+    display: ${config.teamsExpanded ? 'block' : 'none'};
+}
+
+        #cwe-teams-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: url('${config.backgroundImage}');
+            background-size: cover;
+            background-position: center;
+            opacity: 0.5;
+            z-index: -1;
+            border-radius: 3px;
+        }
+
+        #cwe-teams-header {
+            padding: 5px;
+            background: rgba(45, 60, 45, 0.7);
+            cursor: move;
+            font-weight: bold;
+            border-bottom: 1px solid #2d4a2d;
+            white-space: nowrap;
+            font-size: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+#cwe-teams-content {
+    padding: 8px;
+    overflow-y: auto;
+    height: 120px; /* Уменьшенная высота контента */
+    font-size: 11px;
+}
+
+        #cwe-teams-buttons {
+            display: flex;
+            justify-content: space-between;
+            padding: 0 8px 8px;
+        }
+
+        #cwe-teams-refresh {
+            padding: 5px 10px;
+            background: rgba(45, 60, 45, 0.7);
+            border: 1px solid #2d4a2d;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 11px;
+            flex: 1;
+            margin-right: 5px;
+        }
+
+        #cwe-teams-refresh:hover {
+            background: rgba(45, 80, 45, 0.8);
+        }
+
+        #cwe-teams-reset {
+            padding: 5px 10px;
+            background: rgba(90, 45, 45, 0.7);
+            border: 1px solid #5a2d2d;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 11px;
+            flex: 1;
+        }
+
+        #cwe-teams-reset:hover {
+            background: rgba(100, 45, 45, 0.8);
+        }
+
+        .cwe-team-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 5px;
+            padding-bottom: 5px;
+            border-bottom: 1px solid rgba(45, 60, 45, 0.3);
+        }
+
+        .cwe-team-name {
+            flex: 1;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin-right: 10px;
+        }
+
+        .cwe-team-color {
+            width: 20px;
+            height: 20px;
+            margin: 0 2px;
+            border: 1px solid #3a5a3a;
+            border-radius: 3px;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .cwe-team-color.selected {
+            border: 2px solid #fff;
+        }
+
+        .cwe-team-btn {
+            display: block;
+            width: 90%;
+            margin: 5px auto;
+            padding: 5px;
+            background: ${config.teamsExpanded ? '#2d4a2d' : 'rgba(45, 60, 45, 0.7)'};
+            border: 1px solid #2d4a2d;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 11px;
+            text-align: center;
+            transition: background 0.3s;
+        }
+
+        .cwe-team-btn:hover {
+            background: ${config.teamsExpanded ? '#3a5a3a' : 'rgba(45, 80, 45, 0.8)'};
+        }
+
+        #cwe-color-settings-btn {
+            padding: 2px 5px;
+            background: rgba(45, 60, 45, 0.7);
+            border: 1px solid #2d4a2d;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 11px;
+            margin-left: 5px;
+        }
+
+        #cwe-color-settings-btn:hover {
+            background: rgba(45, 80, 45, 0.8);
+        }
+
+        #cwe-color-settings {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 260px;
+            background: rgba(40, 40, 40, 0.95);
+            border: 2px solid #2d4a2d;
+            border-radius: 5px;
+            color: #e0e0e0;
+            font-family: "Comic Sans MS", cursive, sans-serif;
+            z-index: 10000;
+            padding: 8px;
+            display: none;
+        }
+
+        #cwe-color-settings::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: url('${config.backgroundImage}');
+            background-size: cover;
+            background-position: center;
+            opacity: 0.5;
+            z-index: -1;
+            border-radius: 3px;
+        }
+
+        #cwe-color-settings-header {
+            padding: 5px;
+            background: rgba(45, 60, 45, 0.7);
+            font-weight: bold;
+            border-bottom: 1px solid #2d4a2d;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: move;
+            font-size: 11px;
+        }
+
+        #cwe-color-settings-close {
+            cursor: pointer;
+            font-weight: bold;
+            padding: 0 5px;
+            font-size: 14px;
+        }
+
+        .cwe-color-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 8px;
+            font-size: 10px;
+        }
+
+        .cwe-color-table th, .cwe-color-table td {
+            border: 1px solid #3a5a3a;
+            padding: 3px;
+            text-align: center;
+        }
+
+        .cwe-color-table th {
+            background: rgba(45, 60, 45, 0.5);
+        }
+
+        .cwe-color-input {
+            width: 25px;
+            height: 25px;
+            border: none;
+            cursor: pointer;
+            padding: 0;
+        }
+
+        #cwe-color-settings-save {
+            display: block;
+            width: 100%;
+            padding: 5px;
+            background: rgba(45, 60, 45, 0.7);
+            border: 1px solid #2d4a2d;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 11px;
+            text-align: center;
+        }
+
+        #cwe-color-settings-save:hover {
+            background: rgba(45, 80, 45, 0.8);
+        }
+
+        .cwe-divider {
+            color: white;
+            font-weight: bold;
+            margin: 0 5px;
+        }
     `);
 
     function createUI() {
@@ -395,7 +671,10 @@ function _0x4a9e4c() {
         config.factionChecked = true;
 
         let contentHTML = `
-            <div id="cwe-header">Blackwood FightEnhancer ▼</div>
+            <div id="cwe-header">
+                <div id="cwe-header-title">Blackwood FightEnhancer</div>
+                <div id="cwe-toggle-btn">${config.uiExpanded ? '▲' : '▼'}</div>
+            </div>
             <div id="cwe-content">
         `;
 
@@ -420,7 +699,8 @@ function _0x4a9e4c() {
                                         часто срабатывает проверка стрелы, с котячьей пользуюсь
                                         режимом "Часто", для остальных не протестировано.
                                         Ниже нужно вписать ваш catwar ID для того чтобы
-                                        мод понимал какая из стрел ваша.
+                                        мод понимал какая из стрел ваша.<br>
+                                        <br>
                                         Микрофриз так и так останется, но хотя бы стрела
                                         перестанет вставать намертво.
                                     </div>
@@ -444,11 +724,11 @@ function _0x4a9e4c() {
                             <span class="cwe-label">Ускорение
                                 <div class="cwe-help">❔
                                     <div class="cwe-tooltip">
-                                        Позволяет двигаться более быстро, почти уменьшая
-                                        отклик на поле. Работает тоже через костыль. Мод
-                                        повторяет прожатие клавиш направления позволяя ускоряться,
-                                        Из минусов, чем быстрее режим - тем больше могут быть
-                                        лаги.
+                                        Позволяет двигаться быстрее, уменьшая время
+                                        отклика на поле. Мод повторяет прожатие клавиш направления позволяя ускоряться.<br>
+                                        <br>
+                                        Из минусов, чем быстрее режим - тем сильнее могут быть лаги.
+                                        Если изначально плохой инет, то вас ничего не спасет.
                                     </div>
                                 </div>
                             </span>
@@ -463,12 +743,14 @@ function _0x4a9e4c() {
 
                 <div class="cwe-section">
                     <div class="cwe-toggle ${config.energyTracker ? 'active' : ''}" id="cwe-energy-tracker">
-                        <span class="cwe-toggle-label">Трекер энергии</span>
-                        <div class="cwe-toggle-switch"></div>
-                    </div>
-
-                    <div class="cwe-toggle ${config.damageSkins ? 'active' : ''}" id="cwe-damage-skins">
-                        <span class="cwe-toggle-label">Уронки</span>
+                        <span class="cwe-toggle-label">Трекер энергии
+                            <div class="cwe-help">❔
+                                <div class="cwe-tooltip">
+                                    Показывает процент оставшейся энергии под каждым котом на поле боя.<br>
+                                    Зеленый - 100%-50%, желтый - 50%-25%, оранжевый - 25%-1%, красный - 0%.
+                                </div>
+                            </div>
+                        </span>
                         <div class="cwe-toggle-switch"></div>
                     </div>
 
@@ -488,9 +770,8 @@ function _0x4a9e4c() {
                         <span class="cwe-toggle-label">Снять костюмы
                             <div class="cwe-help">❔
                                 <div class="cwe-tooltip">
-                                    Убирает все костюмы с персонажей на поле боя кроме модовских.
-                                    ВАЖНО: может удалять ботов, не знаю как это сработает
-                                    с приходящими ежемесячно, но скорее всего он станет невидимым.
+                                    Убирает все костюмы с персонажей на поле боя.<br>
+                                    ВАЖНО: может удалять ботов, не знаю как это сработает с приходящими ежемесячно, но скорее всего он станет невидимым. (Бабочка на месте!)
                                 </div>
                             </div>
                         </span>
@@ -519,6 +800,10 @@ function _0x4a9e4c() {
                     </div>
                 </div>
 
+                <div class="cwe-section">
+                    <button class="cwe-team-btn" id="cwe-teams-btn">Команды</button>
+                </div>
+
                 <div id="cwe-footer">
                     <a href="https://catwar.net/blog685095" target="_blank">${_0x12cd('0xb')}</a>
                 </div>
@@ -528,6 +813,57 @@ function _0x4a9e4c() {
         contentHTML += `</div>`;
         container.innerHTML = contentHTML;
         document.body.appendChild(container);
+
+        // Создаем контейнер для команд
+        const teamsContainer = document.createElement('div');
+        teamsContainer.id = 'cwe-teams-container';
+        teamsContainer.innerHTML = `
+            <div id="cwe-teams-header">
+                <span>Настройки команд</span>
+                <button id="cwe-color-settings-btn">Настройка цвета</button>
+            </div>
+            <div id="cwe-teams-content"></div>
+            <div id="cwe-teams-buttons">
+                <button id="cwe-teams-refresh">Обновить список</button>
+                <button id="cwe-teams-reset">Сбросить команды</button>
+            </div>
+        `;
+        document.body.appendChild(teamsContainer);
+
+        // Создаем окно настроек цвета
+        const colorSettings = document.createElement('div');
+        colorSettings.id = 'cwe-color-settings';
+        colorSettings.innerHTML = `
+            <div id="cwe-color-settings-header">
+                <span>Настройка цвета команд</span>
+                <span id="cwe-color-settings-close">✕</span>
+            </div>
+            <table class="cwe-color-table">
+                <tr>
+                    <th>Цвет</th>
+                    <th>1</th>
+                    <th>2</th>
+                    <th>3</th>
+                    <th>4</th>
+                </tr>
+                <tr>
+                    <th>Зеленый</th>
+                    <td><input type="color" class="cwe-color-input" id="cwe-color-team1g" value="${config.teamColors.team1g}"></td>
+                    <td><input type="color" class="cwe-color-input" id="cwe-color-team2g" value="${config.teamColors.team2g}"></td>
+                    <td><input type="color" class="cwe-color-input" id="cwe-color-team3g" value="${config.teamColors.team3g}"></td>
+                    <td><input type="color" class="cwe-color-input" id="cwe-color-team4g" value="${config.teamColors.team4g}"></td>
+                </tr>
+                <tr>
+                    <th>Красный</th>
+                    <td><input type="color" class="cwe-color-input" id="cwe-color-team1r" value="${config.teamColors.team1r}"></td>
+                    <td><input type="color" class="cwe-color-input" id="cwe-color-team2r" value="${config.teamColors.team2r}"></td>
+                    <td><input type="color" class="cwe-color-input" id="cwe-color-team3r" value="${config.teamColors.team3r}"></td>
+                    <td><input type="color" class="cwe-color-input" id="cwe-color-team4r" value="${config.teamColors.team4r}"></td>
+                </tr>
+            </table>
+            <button id="cwe-color-settings-save">Сохранить</button>
+        `;
+        document.body.appendChild(colorSettings);
 
         if (isBlackwoodMember) {
             setupSelectControl('cwe-arrow-mode', ['Выкл','Реже','Средне','Часто'], config.arrowFixMode, (value) => {
@@ -550,29 +886,89 @@ function _0x4a9e4c() {
                 updateGridStyle();
             });
 
-            document.getElementById('cwe-header').addEventListener('click', toggleUI);
+            document.getElementById('cwe-toggle-btn').addEventListener('click', toggleUI);
             document.getElementById('cwe-arrow-id').addEventListener('change', updateArrowId);
             document.getElementById('cwe-energy-tracker').addEventListener('click', toggleEnergyTracker);
-            document.getElementById('cwe-damage-skins').addEventListener('click', toggleDamageSkins);
             document.getElementById('cwe-diagonal-skin').addEventListener('click', toggleDiagonalSkin);
             document.getElementById('cwe-remove-costumes').addEventListener('click', toggleRemoveCostumes);
             document.getElementById('cwe-danger-skins').addEventListener('click', toggleDangerSkins);
+            document.getElementById('cwe-teams-btn').addEventListener('click', toggleTeamsUI);
+            document.getElementById('cwe-teams-refresh').addEventListener('click', refreshTeamList);
+            document.getElementById('cwe-teams-reset').addEventListener('click', resetTeams);
+            document.getElementById('cwe-color-settings-btn').addEventListener('click', showColorSettings);
+            document.getElementById('cwe-color-settings-close').addEventListener('click', hideColorSettings);
+            document.getElementById('cwe-color-settings-save').addEventListener('click', saveColorSettings);
 
             setupDrag();
+            setupTeamsDrag();
+            setupColorSettingsDrag();
 
             if (config.energyTracker) startEnergyTracker();
-            if (config.damageSkins) startDamageSkins();
             if (config.diagonalSkin) startDiagonalSkin();
             if (config.removeCostumes) startRemoveCostumes();
             if (config.dangerSkins) startDangerSkins();
             if (config.gridMode > 0) updateGridStyle();
+            if (config.teamsExpanded) refreshTeamList();
         } else {
-            document.getElementById('cwe-header').addEventListener('click', toggleUI);
+            document.getElementById('cwe-toggle-btn').addEventListener('click', toggleUI);
             setupDrag();
         }
     }
 
-    // Остальные функции остаются без изменений
+    function showColorSettings() {
+        document.getElementById('cwe-color-settings').style.display = 'block';
+        colorPickerOpen = true;
+    }
+
+    function hideColorSettings() {
+        document.getElementById('cwe-color-settings').style.display = 'none';
+        colorPickerOpen = false;
+    }
+
+    function saveColorSettings() {
+        config.teamColors.team1g = document.getElementById('cwe-color-team1g').value;
+        config.teamColors.team1r = document.getElementById('cwe-color-team1r').value;
+        config.teamColors.team2g = document.getElementById('cwe-color-team2g').value;
+        config.teamColors.team2r = document.getElementById('cwe-color-team2r').value;
+        config.teamColors.team3g = document.getElementById('cwe-color-team3g').value;
+        config.teamColors.team3r = document.getElementById('cwe-color-team3r').value;
+        config.teamColors.team4g = document.getElementById('cwe-color-team4g').value;
+        config.teamColors.team4r = document.getElementById('cwe-color-team4r').value;
+
+        GM_setValue('teamColors', config.teamColors);
+        hideColorSettings();
+        refreshTeamList();
+        updateTeamColors();
+    }
+
+    function resetTeams() {
+        config.teamAssignments = {};
+        GM_setValue('teamAssignments', config.teamAssignments);
+        refreshTeamList();
+        updateTeamColors();
+    }
+
+    function updateTeamColors() {
+        // Обновляем стили для всех стрелок
+        const styleElement = document.getElementById('cwe-team-colors-style');
+        if (styleElement) {
+            styleElement.remove();
+        }
+
+        let styleContent = '';
+        for (const [arrowId, team] of Object.entries(config.teamAssignments)) {
+            styleContent += `
+                #arrow${arrowId} .arrow_green { background: ${config.teamColors[`team${team}g`]} !important; }
+                #arrow${arrowId} .arrow_red { background: ${config.teamColors[`team${team}r`]} !important; }
+            `;
+        }
+
+        const newStyleElement = document.createElement('style');
+        newStyleElement.id = 'cwe-team-colors-style';
+        newStyleElement.textContent = styleContent;
+        document.head.appendChild(newStyleElement);
+    }
+
     function setupSelectControl(prefix, options, currentValue, callback) {
         const valueElement = document.getElementById(`${prefix}-value`);
         const leftArrow = valueElement.previousElementSibling;
@@ -600,7 +996,7 @@ function _0x4a9e4c() {
         const container = document.getElementById('cwe-container');
 
         header.addEventListener('mousedown', function(e) {
-            if (e.target !== header) return;
+            if (e.target.id === 'cwe-toggle-btn') return;
             isDragging = true;
             dragStartX = e.clientX;
             dragStartY = e.clientY;
@@ -614,8 +1010,13 @@ function _0x4a9e4c() {
             if (!isDragging) return;
             const dx = e.clientX - dragStartX;
             const dy = e.clientY - dragStartY;
-            container.style.left = (elementStartX + dx) + 'px';
-            container.style.top = (elementStartY + dy) + 'px';
+
+            // Ограничение перемещения по границам экрана
+            const newLeft = Math.min(Math.max(elementStartX + dx, 0), window.innerWidth - container.offsetWidth);
+            const newTop = Math.min(Math.max(elementStartY + dy, 0), window.innerHeight - container.offsetHeight);
+
+            container.style.left = newLeft + 'px';
+            container.style.top = newTop + 'px';
             e.preventDefault();
         });
 
@@ -623,29 +1024,179 @@ function _0x4a9e4c() {
             if (!isDragging) return;
             isDragging = false;
             const rect = container.getBoundingClientRect();
-            config.posX = Math.min(Math.max(rect.left, 0), window.innerWidth - 200);
-            config.posY = Math.min(Math.max(rect.top, 0), window.innerHeight - 30);
+            config.posX = rect.left;
+            config.posY = rect.top;
             GM_setValue('posX', config.posX);
             GM_setValue('posY', config.posY);
-            container.style.left = config.posX + 'px';
-            container.style.top = config.posY + 'px';
+        });
+    }
+
+    function setupTeamsDrag() {
+        const header = document.getElementById('cwe-teams-header');
+        const container = document.getElementById('cwe-teams-container');
+
+        header.addEventListener('mousedown', function(e) {
+            if (e.target.closest('#cwe-color-settings-btn') || colorPickerOpen) return;
+            isTeamsDragging = true;
+            dragStartX = e.clientX;
+            dragStartY = e.clientY;
+            const rect = container.getBoundingClientRect();
+            elementStartX = rect.left;
+            elementStartY = rect.top;
+            e.preventDefault();
+        });
+
+        document.addEventListener('mousemove', function(e) {
+            if (!isTeamsDragging) return;
+            const dx = e.clientX - dragStartX;
+            const dy = e.clientY - dragStartY;
+
+            // Ограничение перемещения по границам экрана
+            const newLeft = Math.min(Math.max(elementStartX + dx, 0), window.innerWidth - container.offsetWidth);
+            const newTop = Math.min(Math.max(elementStartY + dy, 0), window.innerHeight - container.offsetHeight);
+
+            container.style.left = newLeft + 'px';
+            container.style.top = newTop + 'px';
+            e.preventDefault();
+        });
+
+        document.addEventListener('mouseup', function() {
+            if (!isTeamsDragging) return;
+            isTeamsDragging = false;
+            const rect = container.getBoundingClientRect();
+            config.teamsPosX = rect.left;
+            config.teamsPosY = rect.top;
+            GM_setValue('teamsPosX', config.teamsPosX);
+            GM_setValue('teamsPosY', config.teamsPosY);
+        });
+    }
+
+    function setupColorSettingsDrag() {
+        const header = document.getElementById('cwe-color-settings-header');
+        const container = document.getElementById('cwe-color-settings');
+
+        header.addEventListener('mousedown', function(e) {
+            if (e.target.id === 'cwe-color-settings-close') return;
+            isColorSettingsDragging = true;
+            dragStartX = e.clientX;
+            dragStartY = e.clientY;
+            const rect = container.getBoundingClientRect();
+            elementStartX = rect.left;
+            elementStartY = rect.top;
+            e.preventDefault();
+        });
+
+        document.addEventListener('mousemove', function(e) {
+            if (!isColorSettingsDragging) return;
+            const dx = e.clientX - dragStartX;
+            const dy = e.clientY - dragStartY;
+
+            // Ограничение перемещения по границам экрана
+            const newLeft = Math.min(Math.max(elementStartX + dx, 0), window.innerWidth - container.offsetWidth);
+            const newTop = Math.min(Math.max(elementStartY + dy, 0), window.innerHeight - container.offsetHeight);
+
+            container.style.left = newLeft + 'px';
+            container.style.top = newTop + 'px';
+            e.preventDefault();
+        });
+
+        document.addEventListener('mouseup', function() {
+            isColorSettingsDragging = false;
         });
     }
 
     function toggleUI(e) {
-        if (isDragging) return;
         const content = document.getElementById('cwe-content');
-        const header = document.getElementById('cwe-header');
+        const toggleBtn = document.getElementById('cwe-toggle-btn');
 
         if (content.style.display === 'block') {
             content.style.display = 'none';
-            header.innerHTML = 'Blackwood FightEnhancer ▼';
+            toggleBtn.innerHTML = '▼';
             document.getElementById('cwe-container').style.height = '30px';
+            config.uiExpanded = false;
         } else {
             content.style.display = 'block';
-            header.innerHTML = 'Blackwood FightEnhancer ▲';
+            toggleBtn.innerHTML = '▲';
             document.getElementById('cwe-container').style.height = 'auto';
+            config.uiExpanded = true;
         }
+        GM_setValue('uiExpanded', config.uiExpanded);
+    }
+
+    function toggleTeamsUI() {
+        const teamsContainer = document.getElementById('cwe-teams-container');
+        const teamsBtn = document.getElementById('cwe-teams-btn');
+
+        config.teamsExpanded = !config.teamsExpanded;
+        GM_setValue('teamsExpanded', config.teamsExpanded);
+
+        if (config.teamsExpanded) {
+            teamsContainer.style.display = 'block';
+            teamsBtn.style.background = '#2d4a2d';
+            refreshTeamList();
+        } else {
+            teamsContainer.style.display = 'none';
+            teamsBtn.style.background = 'rgba(45, 60, 45, 0.7)';
+        }
+    }
+
+    function refreshTeamList() {
+        const teamsContent = document.getElementById('cwe-teams-content');
+        teamsContent.innerHTML = '';
+
+// Получаем всех котов с стрелками на поле
+const arrows = document.querySelectorAll('.arrow');
+const teamRows = [];
+
+arrows.forEach(arrow => {
+    const arrowId = arrow.id.replace('arrow', '');
+    const catLink = document.querySelector(`.cat_tooltip a[href="/cat${arrowId}"]`);
+    if (!catLink) return;
+
+    const catName = catLink.textContent;
+    const currentTeam = config.teamAssignments[arrowId] || '1';
+
+    const row = document.createElement('div');
+    row.className = 'cwe-team-row';
+    row.innerHTML = `
+        <div class="cwe-team-name">${catName}</div>
+        <div class="cwe-team-color ${currentTeam === '1' ? 'selected' : ''}" style="background: ${config.teamColors.team1g}" data-team="1" data-arrow="${arrowId}"></div>
+        <div class="cwe-team-color ${currentTeam === '2' ? 'selected' : ''}" style="background: ${config.teamColors.team2g}" data-team="2" data-arrow="${arrowId}"></div>
+        <div class="cwe-team-color ${currentTeam === '3' ? 'selected' : ''}" style="background: ${config.teamColors.team3g}" data-team="3" data-arrow="${arrowId}"></div>
+        <div class="cwe-team-color ${currentTeam === '4' ? 'selected' : ''}" style="background: ${config.teamColors.team4g}" data-team="4" data-arrow="${arrowId}"></div>
+    `;
+
+    teamRows.push(row);
+});
+
+        if (teamRows.length === 0) {
+            teamsContent.innerHTML = '<div style="text-align: center; padding: 10px;">Нет котов с стрелками на поле</div>';
+        } else {
+            teamRows.forEach(row => teamsContent.appendChild(row));
+        }
+
+        // Добавляем обработчики для выбора команды
+        document.querySelectorAll('.cwe-team-color').forEach(color => {
+            color.addEventListener('click', function() {
+                const arrowId = this.getAttribute('data-arrow');
+                const team = this.getAttribute('data-team');
+
+                // Сбрасываем выделение для всех цветов этой стрелки
+                document.querySelectorAll(`.cwe-team-color[data-arrow="${arrowId}"]`).forEach(c => {
+                    c.classList.remove('selected');
+                });
+
+                // Выделяем выбранный цвет
+                this.classList.add('selected');
+
+                // Сохраняем выбор
+                config.teamAssignments[arrowId] = team;
+                GM_setValue('teamAssignments', config.teamAssignments);
+
+                // Применяем цвет к стрелке
+                updateTeamColors();
+            });
+        });
     }
 
     function updateArrowId() {
@@ -665,15 +1216,6 @@ function _0x4a9e4c() {
         GM_setValue('energyTracker', config.energyTracker);
         if (config.energyTracker) startEnergyTracker();
         else stopEnergyTracker();
-    }
-
-    function toggleDamageSkins() {
-        const element = document.getElementById('cwe-damage-skins');
-        element.classList.toggle('active');
-        config.damageSkins = !config.damageSkins;
-        GM_setValue('damageSkins', config.damageSkins);
-        if (config.damageSkins) startDamageSkins();
-        else stopDamageSkins();
     }
 
     function toggleDiagonalSkin() {
@@ -839,46 +1381,6 @@ function _0x4a9e4c() {
         energyTrackerInterval = null;
         document.querySelectorAll('.energy-percent-final').forEach(ind => {
             ind.style.display = 'none';
-        });
-    }
-
-    function applyDamageSkins() {
-        if (!config.damageSkins) return;
-
-        document.querySelectorAll('span.cat').forEach(cat => {
-            const layers = cat.querySelectorAll('div[style*="background-size"]');
-            if (!layers.length) return;
-
-            const sizeMatch = layers[0].style.backgroundSize.match(/(\d+)%/);
-            if (!sizeMatch) return;
-
-            const size = parseInt(sizeMatch[1]);
-            if (isNaN(size) || size < DAMAGE_SKIN_CONFIG.minSize || size > DAMAGE_SKIN_CONFIG.maxSize) return;
-            if (cat.querySelector('.mashroom-costume')) return;
-
-            const img = document.createElement('img');
-            img.src = DAMAGE_SKIN_CONFIG.url;
-            img.className = 'mashroom-costume';
-            img.style.width = `${size}%`;
-            cat.insertBefore(img, cat.firstChild);
-        });
-    }
-
-    function startDamageSkins() {
-        if (damageSkinObserver) return;
-        applyDamageSkins();
-        damageSkinObserver = new MutationObserver(() => applyDamageSkins());
-        damageSkinObserver.observe(document.body, { childList: true, subtree: true });
-        window.addEventListener('load', applyDamageSkins);
-        setTimeout(applyDamageSkins, 2000);
-    }
-
-    function stopDamageSkins() {
-        if (!damageSkinObserver) return;
-        damageSkinObserver.disconnect();
-        damageSkinObserver = null;
-        document.querySelectorAll('.mashroom-costume').forEach(costume => {
-            costume.remove();
         });
     }
 
