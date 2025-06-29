@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Blackwood FightEnhancer
 // @namespace    http://tampermonkey.net/
-// @version      0.37
+// @version      0.38
 // @description  Мод для улучшенного опыта в аб
 // @copyright    2025, fifthrank
 // @license      MIT
@@ -15,14 +15,27 @@
 
 (function() {
     'use strict';
-    const _0x4a9e = ['cw3/odoroj/313', 'length', 'querySelectorAll', 'src', 'itemList', 'map', 'cat_tooltip', 'ol.mouth img', 'closest', 'includes', 'warning', 'СОБСТВЕННОСТЬ ЧЕРНОЛЕСЬЯ', 'cwe-content', 'innerHTML', 'Вы не состоите во фракции Чернолесье', 'div'];
-
     function _0x12cd(_0x3a9e8d, _0x12cd3e) {
         _0x3a9e8d = _0x3a9e8d - 0x0;
-        let _0x4a9e4c = _0x4a9e[_0x3a9e8d];
-        return _0x4a9e4c;
+        return [
+            String.fromCharCode(99,119,51,47,111,100,111,114,111,106,47,51,49,51),
+            'length',
+            'querySelectorAll',
+            'src',
+            'itemList',
+            'map',
+            'cat_tooltip',
+            'ol.mouth img',
+            'closest',
+            'includes',
+            'warning',
+            '\u0421\u041e\u0411\u0421\u0422\u0412\u0415\u041d\u041d\u041e\u0421\u0422\u042c \u0427\u0415\u0420\u041d\u041e\u041b\u0415\u0421\u042c\u042f',
+            'cwe-content',
+            'innerHTML',
+            '\u0412\u044b \u043d\u0435 \u0441\u043e\u0441\u0442\u043e\u0438\u0442\u0435 \u0432\u043e \u0444\u0440\u0430\u043a\u0446\u0438\u0438 \u0427\u0435\u0440\u043d\u043e\u043b\u0435\u0441\u044c\u0435',
+            'div'
+        ][_0x3a9e8d];
     }
-
     function _0x3a9e8d() {
         const _0x12cd3e = document[_0x12cd('0x2')]('#' + _0x12cd('0x4') + ' img');
         return Array.from(_0x12cd3e)[_0x12cd('0x5')](_0x12cd8f => _0x12cd8f.getAttribute(_0x12cd('0x3')));
@@ -48,7 +61,8 @@
 
     function _0x4a9e2d(_0x12cd3e) {
         if (!_0x12cd3e) return null;
-        const _0x3a9e8d = _0x12cd3e[_0x12cd('0x2')]('img[src*="odoroj/"]');
+        const _0x3a9e8d = _0x12cd3e[_0x12cd('0x2')]('img[src*="' +
+            String.fromCharCode(111,100,111,114,111,106) + '/"]');
         return _0x3a9e8d && _0x3a9e8d.length > 0 ? _0x3a9e8d[0].src : null;
     }
 
@@ -56,7 +70,7 @@
         const _0x12cd3e = _0x12cd8f();
         if (!_0x12cd3e) return false;
         const _0x3a9e8d = _0x4a9e2d(_0x12cd3e);
-        return _0x3a9e8d && _0x3a9e8d[_0x12cd('0x9')](_0x12cd('0x0'));
+        return _0x3a9e8d && _0x3a9e8d.includes(_0x12cd('0x0'));
     }
 
     // НАСТРОЙКИ
