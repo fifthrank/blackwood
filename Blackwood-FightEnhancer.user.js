@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Blackwood FightEnhancer
 // @namespace    http://tampermonkey.net/
-// @version      0.38
+// @version      0.44
 // @description  Мод для улучшенного опыта в аб
 // @copyright    2025, fifthrank
 // @license      MIT
@@ -75,7 +75,7 @@
 
     // НАСТРОЙКИ
     let config = {
-        speedMode: GM_getValue('speedMode', 2),
+        speedMode: GM_getValue('speedMode', 1),
         arrowFixMode: GM_getValue('arrowFixMode', 3),
         arrowId: GM_getValue('arrowId', '1234567'),
         posX: GM_getValue('posX', 20),
@@ -85,7 +85,8 @@
         removeCostumes: GM_getValue('removeCostumes', false),
         dangerSkins: GM_getValue('dangerSkins', false),
         gridMode: GM_getValue('gridMode', 0),
-        backgroundImage: GM_getValue('backgroundImage', 'https://i.postimg.cc/kg6P9vhn/image.png'),
+        soundVolume: GM_getValue('soundVolume', 66),
+        backgroundImage: GM_getValue('backgroundImage', 'https://i.ibb.co/d8kBBCy/image.png'),
         factionChecked: false,
         uiExpanded: GM_getValue('uiExpanded', false),
         teamsExpanded: GM_getValue('teamsExpanded', false),
@@ -109,21 +110,23 @@
         updateTeamColors();
     }
 
+    const ARROW_FIX_CONFIGS = [
+        null,
+        { checkInterval: 60, repeatInterval: 100, moveThreshold: 0.01, maxFailedChecks: 5 },
+        { checkInterval: 20, repeatInterval: 60, moveThreshold: 0.05, maxFailedChecks: 5 },
+        { checkInterval: 30, repeatInterval: 80, moveThreshold: 0.1, maxFailedChecks: 1 }
+    ];
+
     const SPEED_SETTINGS = {
-        0: [0, 0],
-        1: [120, 80],
-        2: [100, 40],
+        0: [0, 0], // Выкл - ускорение отключено
+        1: [110, 75], // Норма
+        2: [80, 35] // Быстро
     };
 
-    const ARROW_FIX_SETTINGS = {
-        0: {check:0, repeat:0, threshold:0},
-        1: {check:100, repeat:160, threshold:1.6},
-        2: {check:60, repeat:120, threshold:0.8},
-        3: {check:30, repeat:80, threshold:0.1}
-    };
+    const BLOCK_CONFIG = { holdDelay: 20, repeatInterval: 20 };
 
     const DIAGONAL_SKIN_CONFIG = {
-        url: 'https://i.postimg.cc/90mpJHfF/6.png',
+        url: 'https://i.ibb.co/k601Xs4X/6.png',
         minSize: 55,
         maxSize: 100,
         className: 'diagonal-skin-element',
@@ -137,16 +140,35 @@
         3: 'td.cage { box-shadow: inset 0px 0px 0px 0.30px gray; }'
     };
 
+    // Стили для опасных костюмов
+    const DANGER_SKINS_STYLES = `
+        [style*='/cw3/cats/0/defects/wound/4'] {
+            background-image: url(https://i.ibb.co/NdPQDKL0/4.png) !important;
+        }
+        [style*='/cw3/cats/0/defects/wound/3'] {
+            background-image: url(https://i.ibb.co/hF8pMnZs/3.png) !important;
+        }
+        [style*='/cw3/cats/0/defects/wound/2'] {
+            background-image: url(https://i.ibb.co/Tn35nKf/2.png) !important;
+        }
+        [style*='/cw3/cats/0/defects/wound/1'] {
+            background-image: url(https://i.ibb.co/8ggvPwjm/1.png) !important;
+        }
+    `;
+
+    let arrowConfig = ARROW_FIX_CONFIGS[config.arrowFixMode];
     let [HOLD_DELAY, REPEAT_INTERVAL] = SPEED_SETTINGS[config.speedMode];
-    let arrowConfig = ARROW_FIX_SETTINGS[config.arrowFixMode];
     const MOVEMENT_KEYS = ['KeyA','KeyD','KeyW','KeyS','KeyQ','KeyE','KeyZ','KeyX'];
     const ARROW_KEYS = {KeyL:false, KeyJ:false};
+    const BLOCK_KEY = 'KeyK';
 
     let isMovementKeyDown = false;
     let currentMovementKey = null;
     let movementTimers = {repeat:null, hold:null};
     let arrowTimers = {check:null, repeat:null};
-    let lastArrowPos = {KeyL:null, KeyJ:null};
+    let lastArrowPos = null;
+    let failedChecks = 0;
+    let recoveryMode = false;
     let isDragging = false;
     let dragStartX, dragStartY, elementStartX, elementStartY;
     let energyTrackerInterval = null;
@@ -161,9 +183,16 @@
     let isTeamsDragging = false;
     let isColorSettingsDragging = false;
     let colorPickerOpen = false;
+    let dangerSkinsStyleElement = null;
+    let originalWoundStyles = {};
+    let isBattleModeActive = false;
 
     // ИНТЕРФЕЙС
     GM_addStyle(`
+        #cages_div {
+            opacity: 1 !important;
+        }
+
         #cwe-container {
             position: fixed;
             top: ${Math.min(Math.max(config.posY, 0), window.innerHeight - 30)}px;
@@ -212,12 +241,16 @@
 
         #cwe-header-title {
             flex-grow: 1;
+            padding-right: 10px;
+            cursor: pointer;
         }
 
         #cwe-toggle-btn {
             cursor: pointer;
             padding: 0 5px;
             font-size: 14px;
+            width: 20px;
+            text-align: center;
         }
 
         #cwe-content {
@@ -241,7 +274,7 @@
         }
 
         .cwe-label {
-            margin-right: 10px;
+            margin-right: 5px;
             text-align: left;
             display: flex;
             align-items: center;
@@ -257,7 +290,7 @@
             width: 14px;
             height: 14px;
             font-size: 11px;
-            margin-left: 5px;
+            margin-right: -14px;
         }
 
         .cwe-tooltip {
@@ -309,6 +342,7 @@
             border-radius: 3px;
             font-size: 11px;
             font-family: "Comic Sans MS", cursive, sans-serif;
+            width: 60px;
         }
 
         #cwe-arrow-id {
@@ -319,7 +353,7 @@
             border: 1px solid #3a5a3a;
             border-radius: 3px;
             font-size: 11px;
-            text-align: left;
+            text-align: center;
             font-family: "Comic Sans MS", cursive, sans-serif;
         }
 
@@ -428,22 +462,22 @@
             font-weight: bold;
         }
 
-#cwe-teams-container {
-    position: fixed;
-    top: ${Math.min(Math.max(config.teamsPosY, 0), window.innerHeight - 180)}px;
-    left: ${Math.min(Math.max(config.teamsPosX, 0), window.innerWidth - 270)}px;
-    width: 270px;
-    height: 180px; /* Уменьшенная высота */
-    background: rgba(40, 40, 40, 0.9);
-    border: 2px solid #2d4a2d;
-    border-radius: 5px;
-    color: #e0e0e0;
-    font-family: "Comic Sans MS", cursive, sans-serif;
-    z-index: 10000; /* Увеличиваем z-index, чтобы было выше основного окна */
-    overflow: hidden;
-    box-shadow: 0 0 10px rgba(0,0,0,0.5);
-    display: ${config.teamsExpanded ? 'block' : 'none'};
-}
+        #cwe-teams-container {
+            position: fixed;
+            top: ${Math.min(Math.max(config.teamsPosY, 0), window.innerHeight - 180)}px;
+            left: ${Math.min(Math.max(config.teamsPosX, 0), window.innerWidth - 270)}px;
+            width: 270px;
+            height: 180px;
+            background: rgba(40, 40, 40, 0.9);
+            border: 2px solid #2d4a2d;
+            border-radius: 5px;
+            color: #e0e0e0;
+            font-family: "Comic Sans MS", cursive, sans-serif;
+            z-index: 10000;
+            overflow: hidden;
+            box-shadow: 0 0 10px rgba(0,0,0,0.5);
+            display: ${config.teamsExpanded ? 'block' : 'none'};
+        }
 
         #cwe-teams-container::before {
             content: '';
@@ -473,12 +507,12 @@
             align-items: center;
         }
 
-#cwe-teams-content {
-    padding: 8px;
-    overflow-y: auto;
-    height: 120px; /* Уменьшенная высота контента */
-    font-size: 11px;
-}
+        #cwe-teams-content {
+            padding: 8px;
+            overflow-y: auto;
+            height: 120px;
+            font-size: 11px;
+        }
 
         #cwe-teams-buttons {
             display: flex;
@@ -674,6 +708,51 @@
             font-weight: bold;
             margin: 0 5px;
         }
+
+        /* Стили для опасных костюмов */
+        .danger-skin {
+            position: absolute;
+            width: 100%;
+            height: auto;
+            pointer-events: none;
+            z-index: -9;
+            top: 0;
+            left: 0;
+        }
+
+        /* Стили для звукового контрола */
+        #cwe-sound-control {
+            margin-top: 10px;
+        }
+
+        #cwe-sound-slider {
+            width: 180px;
+            height: 6px;
+            background: #5a8f5a;
+            border-radius: 3px;
+            margin: 5px auto;
+            position: relative;
+        }
+
+        #cwe-sound-slider-handle {
+            width: 12px;
+            height: 12px;
+            background: #fff;
+            border: 1px solid #5a8f5a;
+            border-radius: 50%;
+            position: absolute;
+            top: -4px;
+            left: ${config.soundVolume}%;
+            transform: translateX(-50%);
+            cursor: pointer;
+        }
+
+        #cwe-sound-value {
+            text-align: center;
+            font-weight: bold;
+            margin: 5px 0;
+            font-size: 11px;
+        }
     `);
 
     function createUI() {
@@ -703,49 +782,40 @@
             contentHTML += `
                 <div class="cwe-section">
                     <div class="cwe-row">
-                        <div style="display: flex; align-items: center;">
-                            <span class="cwe-label">Фикс стрелы
-                                <div class="cwe-help">❔
-                                    <div class="cwe-tooltip">
-                                        Немного исправляет стопы стрелы с помощью костыля,
-                                        проверяя положение стрелы и если она встала, то
-                                        дает ей пинок для отлага. Тут можно выбрать как
-                                        часто срабатывает проверка стрелы, с котячьей пользуюсь
-                                        режимом "Часто", для остальных не протестировано.
-                                        Ниже нужно вписать ваш catwar ID для того чтобы
-                                        мод понимал какая из стрел ваша.<br>
-                                        <br>
-                                        Микрофриз так и так останется, но хотя бы стрела
-                                        перестанет вставать намертво.
-                                    </div>
-                                </div>
-                            </span>
-                        </div>
-                        <div class="cwe-select-container">
-                            <span class="cwe-select-arrow">◄</span>
-                            <span class="cwe-select-value" id="cwe-arrow-mode-value">${['Выкл','Реже','Средне','Часто'][config.arrowFixMode]}</span>
-                            <span class="cwe-select-arrow">►</span>
-                        </div>
-                    </div>
-
-                    <div class="cwe-row">
                         <span class="cwe-label">Ваш ID</span>
                         <input type="text" id="cwe-arrow-id" value="${config.arrowId}">
                     </div>
 
                     <div class="cwe-row">
                         <div style="display: flex; align-items: center;">
-                            <span class="cwe-label">Ускорение
-                                <div class="cwe-help">❔
-                                    <div class="cwe-tooltip">
-                                        Позволяет двигаться быстрее, уменьшая время
-                                        отклика на поле. Мод повторяет прожатие клавиш направления позволяя ускоряться.<br>
-                                        <br>
-                                        Из минусов, чем быстрее режим - тем сильнее могут быть лаги.
-                                        Если изначально плохой инет, то вас ничего не спасет.
-                                    </div>
+                            <span class="cwe-label">Фикс стрелы</span>
+                            <div class="cwe-help">❔
+                                <div class="cwe-tooltip">
+                                    Исправляет залипание стрелы при поворотах, идёт проверка положения стрелы и при стопах даёт пинок заставляя ее двигаться<br>
+                                    Если CW лагает и плохой интернет, то помощи от фикса мало. <br>
+                                    Можно выбрать как часто мод будет проверять стопы стрелы: Редко - меньше проверок; Часто - больше проверок.
                                 </div>
-                            </span>
+                            </div>
+                        </div>
+                        <div class="cwe-select-container">
+                            <span class="cwe-select-arrow">◄</span>
+                            <span class="cwe-select-value" id="cwe-arrow-mode-value">${['Выкл','Редко','Баланс','Часто'][config.arrowFixMode]}</span>
+                            <span class="cwe-select-arrow">►</span>
+                        </div>
+                    </div>
+
+                    <div class="cwe-row">
+                        <div style="display: flex; align-items: center;">
+                            <span class="cwe-label">Ускорение</span>
+                            <div class="cwe-help">❔
+                                <div class="cwe-tooltip">
+                                    Позволяет двигаться быстрее, уменьшая время
+                                    отклика на поле. Мод повторяет прожатие клавиш направления позволяя ускоряться.<br>
+                                    <br>
+                                    Из минусов, чем быстрее режим - тем сильнее могут быть лаги.
+                                    Если изначально плохой инет, то вас ничего не спасет.
+                                </div>
+                            </div>
                         </div>
                         <div class="cwe-select-container">
                             <span class="cwe-select-arrow">◄</span>
@@ -785,7 +855,7 @@
                             <div class="cwe-help">❔
                                 <div class="cwe-tooltip">
                                     Убирает все костюмы с персонажей на поле боя.<br>
-                                    ВАЖНО: может удалять ботов, не знаю как это сработает с приходящими ежемесячно, но скорее всего он станет невидимым. (Бабочка на месте!)
+                                    ВАЖНО: может удалять ботов, не понятно как сработает с ежемесячным. (бабочка на месте, козёл пропадает)
                                 </div>
                             </div>
                         </span>
@@ -797,7 +867,6 @@
                             <div class="cwe-help">❔
                                 <div class="cwe-tooltip">
                                     Заменяет стандартные изображения ранений на более заметные варианты.
-                                    По факту перенос мода со Stylus.
                                 </div>
                             </div>
                         </span>
@@ -815,6 +884,18 @@
                 </div>
 
                 <div class="cwe-section">
+                    <div id="cwe-sound-control">
+                        <div class="cwe-row" style="justify-content: center; margin-bottom: 5px;">
+                            <span class="cwe-label">Озвучка игровой</span>
+                        </div>
+                        <div id="cwe-sound-slider">
+                            <div id="cwe-sound-slider-handle"></div>
+                        </div>
+                        <div id="cwe-sound-value">${config.soundVolume}%</div>
+                    </div>
+                </div>
+
+                <div class="cwe-section">
                     <button class="cwe-team-btn" id="cwe-teams-btn">Команды</button>
                 </div>
 
@@ -828,7 +909,6 @@
         container.innerHTML = contentHTML;
         document.body.appendChild(container);
 
-        // Создаем контейнер для команд
         const teamsContainer = document.createElement('div');
         teamsContainer.id = 'cwe-teams-container';
         teamsContainer.innerHTML = `
@@ -844,7 +924,6 @@
         `;
         document.body.appendChild(teamsContainer);
 
-        // Создаем окно настроек цвета
         const colorSettings = document.createElement('div');
         colorSettings.id = 'cwe-color-settings';
         colorSettings.innerHTML = `
@@ -880,10 +959,10 @@
         document.body.appendChild(colorSettings);
 
         if (isBlackwoodMember) {
-            setupSelectControl('cwe-arrow-mode', ['Выкл','Реже','Средне','Часто'], config.arrowFixMode, (value) => {
+            setupSelectControl('cwe-arrow-mode', ['Выкл','Редко','Баланс','Часто'], config.arrowFixMode, (value) => {
                 config.arrowFixMode = value;
                 GM_setValue('arrowFixMode', config.arrowFixMode);
-                arrowConfig = ARROW_FIX_SETTINGS[config.arrowFixMode];
+                arrowConfig = ARROW_FIX_CONFIGS[config.arrowFixMode];
                 stopArrowTimers();
             });
 
@@ -901,6 +980,7 @@
             });
 
             document.getElementById('cwe-toggle-btn').addEventListener('click', toggleUI);
+            document.getElementById('cwe-header-title').addEventListener('click', toggleUI);
             document.getElementById('cwe-arrow-id').addEventListener('change', updateArrowId);
             document.getElementById('cwe-energy-tracker').addEventListener('click', toggleEnergyTracker);
             document.getElementById('cwe-diagonal-skin').addEventListener('click', toggleDiagonalSkin);
@@ -913,6 +993,8 @@
             document.getElementById('cwe-color-settings-close').addEventListener('click', hideColorSettings);
             document.getElementById('cwe-color-settings-save').addEventListener('click', saveColorSettings);
 
+            setupSoundControl();
+
             setupDrag();
             setupTeamsDrag();
             setupColorSettingsDrag();
@@ -923,10 +1005,139 @@
             if (config.dangerSkins) startDangerSkins();
             if (config.gridMode > 0) updateGridStyle();
             if (config.teamsExpanded) refreshTeamList();
+
+            observeBattleMode();
         } else {
             document.getElementById('cwe-toggle-btn').addEventListener('click', toggleUI);
+            document.getElementById('cwe-header-title').addEventListener('click', toggleUI);
             setupDrag();
         }
+    }
+
+    function observeBattleMode() {
+        const battleModeObserver = new MutationObserver(() => {
+            const arrow = document.getElementById('arrow' + config.arrowId);
+            const newBattleMode = arrow !== null;
+
+            if (newBattleMode !== isBattleModeActive) {
+                isBattleModeActive = newBattleMode;
+                if (!isBattleModeActive) {
+                    stopMovementRepeat();
+                }
+            }
+        });
+
+        battleModeObserver.observe(document.body, {
+            childList: true,
+            subtree: true
+        });
+    }
+
+    function setupSoundControl() {
+        const slider = document.getElementById('cwe-sound-slider');
+        const handle = document.getElementById('cwe-sound-slider-handle');
+        const valueDisplay = document.getElementById('cwe-sound-value');
+
+        let isDragging = false;
+
+        function updateVolume(volume) {
+            config.soundVolume = volume;
+            GM_setValue('soundVolume', volume);
+            valueDisplay.textContent = volume + '%';
+            handle.style.left = volume + '%';
+
+            // Озвучка
+            try {
+                // SoundManager
+                if (window.soundManager && typeof window.soundManager.setVolume === 'function') {
+                    window.soundManager.setVolume(volume);
+                }
+                // HTML5 Audio
+                else {
+                    document.querySelectorAll('audio').forEach(audio => {
+                        audio.volume = volume / 100;
+                    });
+                }
+            } catch (e) {
+                console.log('Ошибка изменения громкости:', e);
+            }
+
+            fetch('https://catwar.net/settings', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `sound=${volume}`,
+                credentials: 'include',
+                keepalive: true
+            }).catch(e => console.log('Ошибка сохранения:', e));
+        }
+
+        function playGameSound() {
+            if (window.soundManager && typeof window.soundManager.play === 'function') {
+                window.soundManager.play();
+                return true;
+            }
+
+            const audioElements = document.querySelectorAll('audio');
+            if (audioElements.length > 0) {
+                audioElements.forEach(audio => {
+                    audio.volume = config.soundVolume / 100;
+                    audio.play().catch(e => console.log('Автовоспроизведение заблокировано:', e));
+                });
+                return true;
+            }
+
+            setTimeout(() => {
+                playGameSound();
+            }, 1000);
+
+            return false;
+        }
+
+        document.addEventListener('DOMContentLoaded', playGameSound);
+        window.addEventListener('load', playGameSound);
+
+        handle.addEventListener('mousedown', function(e) {
+            isDragging = true;
+            e.preventDefault();
+        });
+
+        document.addEventListener('mousemove', function(e) {
+            if (!isDragging) return;
+
+            const sliderRect = slider.getBoundingClientRect();
+            const sliderWidth = slider.offsetWidth;
+
+            let pos = e.clientX - sliderRect.left;
+            pos = Math.max(0, Math.min(pos, sliderWidth));
+
+            const percent = Math.round((pos / sliderWidth) * 100);
+            handle.style.left = percent + '%';
+            updateVolume(percent);
+        });
+
+        document.addEventListener('mouseup', function() {
+            isDragging = false;
+        });
+
+        slider.addEventListener('click', function(e) {
+            const sliderRect = slider.getBoundingClientRect();
+            const sliderWidth = slider.offsetWidth;
+
+            let pos = e.clientX - sliderRect.left;
+            pos = Math.max(0, Math.min(pos, sliderWidth));
+
+            const percent = Math.round((pos / sliderWidth) * 100);
+            handle.style.left = percent + '%';
+            updateVolume(percent);
+        });
+
+        setInterval(() => {
+            if (window.soundManager && !window.soundManager.isPlaying()) {
+                window.soundManager.play();
+            }
+        }, 5000);
     }
 
     function showColorSettings() {
@@ -963,7 +1174,6 @@
     }
 
     function updateTeamColors() {
-        // Обновляем стили для всех стрелок
         const styleElement = document.getElementById('cwe-team-colors-style');
         if (styleElement) {
             styleElement.remove();
@@ -1010,7 +1220,7 @@
         const container = document.getElementById('cwe-container');
 
         header.addEventListener('mousedown', function(e) {
-            if (e.target.id === 'cwe-toggle-btn') return;
+            if (e.target.id === 'cwe-toggle-btn' || e.target.id === 'cwe-header-title') return;
             isDragging = true;
             dragStartX = e.clientX;
             dragStartY = e.clientY;
@@ -1025,7 +1235,6 @@
             const dx = e.clientX - dragStartX;
             const dy = e.clientY - dragStartY;
 
-            // Ограничение перемещения по границам экрана
             const newLeft = Math.min(Math.max(elementStartX + dx, 0), window.innerWidth - container.offsetWidth);
             const newTop = Math.min(Math.max(elementStartY + dy, 0), window.innerHeight - container.offsetHeight);
 
@@ -1065,7 +1274,6 @@
             const dx = e.clientX - dragStartX;
             const dy = e.clientY - dragStartY;
 
-            // Ограничение перемещения по границам экрана
             const newLeft = Math.min(Math.max(elementStartX + dx, 0), window.innerWidth - container.offsetWidth);
             const newTop = Math.min(Math.max(elementStartY + dy, 0), window.innerHeight - container.offsetHeight);
 
@@ -1105,7 +1313,6 @@
             const dx = e.clientX - dragStartX;
             const dy = e.clientY - dragStartY;
 
-            // Ограничение перемещения по границам экрана
             const newLeft = Math.min(Math.max(elementStartX + dx, 0), window.innerWidth - container.offsetWidth);
             const newTop = Math.min(Math.max(elementStartY + dy, 0), window.innerHeight - container.offsetHeight);
 
@@ -1158,30 +1365,29 @@
         const teamsContent = document.getElementById('cwe-teams-content');
         teamsContent.innerHTML = '';
 
-// Получаем всех котов с стрелками на поле
-const arrows = document.querySelectorAll('.arrow');
-const teamRows = [];
+        const arrows = document.querySelectorAll('.arrow');
+        const teamRows = [];
 
-arrows.forEach(arrow => {
-    const arrowId = arrow.id.replace('arrow', '');
-    const catLink = document.querySelector(`.cat_tooltip a[href="/cat${arrowId}"]`);
-    if (!catLink) return;
+        arrows.forEach(arrow => {
+            const arrowId = arrow.id.replace('arrow', '');
+            const catLink = document.querySelector(`.cat_tooltip a[href="/cat${arrowId}"]`);
+            if (!catLink) return;
 
-    const catName = catLink.textContent;
-    const currentTeam = config.teamAssignments[arrowId] || '1';
+            const catName = catLink.textContent;
+            const currentTeam = config.teamAssignments[arrowId] || '1';
 
-    const row = document.createElement('div');
-    row.className = 'cwe-team-row';
-    row.innerHTML = `
-        <div class="cwe-team-name">${catName}</div>
-        <div class="cwe-team-color ${currentTeam === '1' ? 'selected' : ''}" style="background: ${config.teamColors.team1g}" data-team="1" data-arrow="${arrowId}"></div>
-        <div class="cwe-team-color ${currentTeam === '2' ? 'selected' : ''}" style="background: ${config.teamColors.team2g}" data-team="2" data-arrow="${arrowId}"></div>
-        <div class="cwe-team-color ${currentTeam === '3' ? 'selected' : ''}" style="background: ${config.teamColors.team3g}" data-team="3" data-arrow="${arrowId}"></div>
-        <div class="cwe-team-color ${currentTeam === '4' ? 'selected' : ''}" style="background: ${config.teamColors.team4g}" data-team="4" data-arrow="${arrowId}"></div>
-    `;
+            const row = document.createElement('div');
+            row.className = 'cwe-team-row';
+            row.innerHTML = `
+                <div class="cwe-team-name">${catName}</div>
+                <div class="cwe-team-color ${currentTeam === '1' ? 'selected' : ''}" style="background: ${config.teamColors.team1g}" data-team="1" data-arrow="${arrowId}"></div>
+                <div class="cwe-team-color ${currentTeam === '2' ? 'selected' : ''}" style="background: ${config.teamColors.team2g}" data-team="2" data-arrow="${arrowId}"></div>
+                <div class="cwe-team-color ${currentTeam === '3' ? 'selected' : ''}" style="background: ${config.teamColors.team3g}" data-team="3" data-arrow="${arrowId}"></div>
+                <div class="cwe-team-color ${currentTeam === '4' ? 'selected' : ''}" style="background: ${config.teamColors.team4g}" data-team="4" data-arrow="${arrowId}"></div>
+            `;
 
-    teamRows.push(row);
-});
+            teamRows.push(row);
+        });
 
         if (teamRows.length === 0) {
             teamsContent.innerHTML = '<div style="text-align: center; padding: 10px;">Нет котов с стрелками на поле</div>';
@@ -1189,25 +1395,20 @@ arrows.forEach(arrow => {
             teamRows.forEach(row => teamsContent.appendChild(row));
         }
 
-        // Добавляем обработчики для выбора команды
         document.querySelectorAll('.cwe-team-color').forEach(color => {
             color.addEventListener('click', function() {
                 const arrowId = this.getAttribute('data-arrow');
                 const team = this.getAttribute('data-team');
 
-                // Сбрасываем выделение для всех цветов этой стрелки
                 document.querySelectorAll(`.cwe-team-color[data-arrow="${arrowId}"]`).forEach(c => {
                     c.classList.remove('selected');
                 });
 
-                // Выделяем выбранный цвет
                 this.classList.add('selected');
 
-                // Сохраняем выбор
                 config.teamAssignments[arrowId] = team;
                 GM_setValue('teamAssignments', config.teamAssignments);
 
-                // Применяем цвет к стрелке
                 updateTeamColors();
             });
         });
@@ -1269,8 +1470,11 @@ arrows.forEach(arrow => {
         element.classList.toggle('active');
         config.dangerSkins = !config.dangerSkins;
         GM_setValue('dangerSkins', config.dangerSkins);
-        if (config.dangerSkins) startDangerSkins();
-        else stopDangerSkins();
+        if (config.dangerSkins) {
+            startDangerSkins();
+        } else {
+            stopDangerSkins();
+        }
     }
 
     function updateGridStyle() {
@@ -1475,61 +1679,90 @@ arrows.forEach(arrow => {
         }
     }
 
+    function saveOriginalWoundStyles() {
+        const woundElements = document.querySelectorAll('[style*="/cw3/cats/0/defects/wound/"]');
+        woundElements.forEach(el => {
+            const arrowId = el.closest('.catWithArrow')?.querySelector('.arrow')?.id.replace('arrow', '');
+            if (arrowId && !originalWoundStyles[arrowId]) {
+                originalWoundStyles[arrowId] = el.getAttribute('style');
+            }
+        });
+    }
+
     function applyDangerSkins() {
         if (!config.dangerSkins) return;
 
-        const styles = `
-            [style*='/cw3/cats/0/defects/wound/4'] {
-                background-image: url(https://i.ibb.co/LhsWZ8D/4.png) !important;
-            }
-            [style*='/cw3/cats/0/defects/wound/3'] {
-                background-image: url(https://i.ibb.co/CvrMZgK/3.png) !important;
-            }
-            [style*='/cw3/cats/0/defects/wound/2'] {
-                background-image: url(https://i.ibb.co/1zKsFnm/2.png) !important;
-            }
-            [style*='/cw3/cats/0/defects/wound/1'] {
-                background-image: url(https://i.ibb.co/S7DBv7m/1.png) !important;
-            }
-        `;
+        saveOriginalWoundStyles();
 
-        const styleElement = document.createElement('style');
-        styleElement.id = 'danger-skins-style';
-        styleElement.textContent = styles;
-        document.head.appendChild(styleElement);
+        if (dangerSkinsStyleElement) {
+            dangerSkinsStyleElement.remove();
+        }
+
+        dangerSkinsStyleElement = document.createElement('style');
+        dangerSkinsStyleElement.id = 'danger-skins-style';
+        dangerSkinsStyleElement.textContent = DANGER_SKINS_STYLES;
+        document.head.appendChild(dangerSkinsStyleElement);
+    }
+
+    function restoreOriginalWoundStyles() {
+        for (const [arrowId, style] of Object.entries(originalWoundStyles)) {
+            const woundElement = document.querySelector(`#arrow${arrowId} [style*="/cw3/cats/0/defects/wound/"]`);
+            if (woundElement) {
+                woundElement.setAttribute('style', style);
+            }
+        }
     }
 
     function startDangerSkins() {
         if (dangerSkinObserver) return;
+
         applyDangerSkins();
-        dangerSkinObserver = new MutationObserver(() => applyDangerSkins());
-        dangerSkinObserver.observe(document.body, { childList: true, subtree: true });
+
+        dangerSkinObserver = new MutationObserver((mutations) => {
+            mutations.forEach((mutation) => {
+                if (mutation.addedNodes) {
+                    applyDangerSkins();
+                }
+            });
+        });
+
+        dangerSkinObserver.observe(document.body, {
+            childList: true,
+            subtree: true
+        });
+
         window.addEventListener('load', applyDangerSkins);
         setTimeout(applyDangerSkins, 2000);
     }
 
     function stopDangerSkins() {
         if (!dangerSkinObserver) return;
+
         dangerSkinObserver.disconnect();
         dangerSkinObserver = null;
-        const styleElement = document.getElementById('danger-skins-style');
-        if (styleElement) {
-            styleElement.remove();
+
+        if (dangerSkinsStyleElement) {
+            dangerSkinsStyleElement.remove();
+            dangerSkinsStyleElement = null;
         }
+
+        restoreOriginalWoundStyles();
     }
 
-    function getArrowPosition() {
+    function getArrowAngle() {
         if (config.arrowFixMode === 0) return null;
         const arrowId = 'arrow' + config.arrowId;
         const arrow = document.getElementById(arrowId);
         if (!arrow) return null;
         const style = window.getComputedStyle(arrow);
         const transform = style.transform || style.webkitTransform;
-        if (!transform || transform === 'none') return null;
-        const values = transform.match(/matrix\((.+)\)/)?.[1].split(', ');
-        if (!values) return null;
-        const angle = Math.atan2(parseFloat(values[1]), parseFloat(values[0])) * (180 / Math.PI);
-        return (angle + 360) % 360;
+        if (!transform || transform === 'none') return 0;
+        const matrix = transform.match(/^matrix\((.+)\)$/);
+        if (!matrix) return null;
+        const values = matrix[1].split(', ');
+        const a = parseFloat(values[0]);
+        const b = parseFloat(values[1]);
+        return Math.round(Math.atan2(b, a) * (180 / Math.PI));
     }
 
     function pressArrowKey(code) {
@@ -1543,74 +1776,84 @@ arrows.forEach(arrow => {
         }));
     }
 
+    function startArrowRecovery() {
+        if (recoveryMode) return;
+        recoveryMode = true;
+        pressArrowKey(ARROW_KEYS.KeyL ? 'KeyL' : 'KeyJ');
+        arrowTimers.repeat = setInterval(() => {
+            if (ARROW_KEYS.KeyL) pressArrowKey('KeyL');
+            if (ARROW_KEYS.KeyJ) pressArrowKey('KeyJ');
+        }, arrowConfig.repeatInterval);
+    }
+
     function checkArrowMovement() {
         if (config.arrowFixMode === 0 || (!ARROW_KEYS.KeyL && !ARROW_KEYS.KeyJ)) {
             stopArrowTimers();
             return;
         }
-
-        const currentPos = getArrowPosition();
+        const currentPos = getArrowAngle();
         if (currentPos === null) return;
+        if (lastArrowPos === null) {
+            lastArrowPos = currentPos;
+            return;
+        }
+        const angleDiff = Math.abs(currentPos - lastArrowPos);
+        const normalizedDiff = Math.min(angleDiff, 360 - angleDiff);
 
-        ['KeyL','KeyJ'].forEach(code => {
-            if (!ARROW_KEYS[code]) {
-                lastArrowPos[code] = null;
-                return;
+        if (normalizedDiff < arrowConfig.moveThreshold) {
+            failedChecks++;
+            if (failedChecks >= arrowConfig.maxFailedChecks) {
+                startArrowRecovery();
             }
-            if (lastArrowPos[code] === null) {
-                lastArrowPos[code] = currentPos;
-                return;
-            }
-            const angleDiff = Math.abs(currentPos - lastArrowPos[code]);
-            const normalizedDiff = Math.min(angleDiff, 360 - angleDiff);
-            if (normalizedDiff < arrowConfig.threshold) {
-                if (!arrowTimers.repeat) {
-                    pressArrowKey(code);
-                    arrowTimers.repeat = setInterval(() => {
-                        ['KeyL','KeyJ'].forEach(k => ARROW_KEYS[k] && pressArrowKey(k));
-                    }, arrowConfig.repeat);
-                }
-            } else if (arrowTimers.repeat) {
+        } else {
+            failedChecks = 0;
+            if (arrowTimers.repeat) {
                 clearInterval(arrowTimers.repeat);
                 arrowTimers.repeat = null;
+                recoveryMode = false;
             }
-            lastArrowPos[code] = currentPos;
-        });
-    }
-
-    function startArrowCheck() {
-        if (config.arrowFixMode === 0 || arrowTimers.check) return;
-        arrowTimers.check = setInterval(checkArrowMovement, arrowConfig.check);
+        }
+        lastArrowPos = currentPos;
     }
 
     function stopArrowTimers() {
         clearInterval(arrowTimers.check);
         clearInterval(arrowTimers.repeat);
-        arrowTimers = {check:null, repeat:null};
-        lastArrowPos = {KeyL:null, KeyJ:null};
+        arrowTimers = { check: null, repeat: null };
+        lastArrowPos = null;
+        recoveryMode = false;
+        failedChecks = 0;
+    }
+
+    function startArrowCheck() {
+        if (arrowTimers.check || !arrowConfig) return;
+        arrowTimers.check = setInterval(checkArrowMovement, arrowConfig.checkInterval);
     }
 
     function sendKeyPress() {
-        if (!isMovementKeyDown || !currentMovementKey || config.speedMode === 0) return;
+        if (!isMovementKeyDown || !currentMovementKey || !isBattleModeActive) return;
+
+        const isBlock = (currentMovementKey === BLOCK_KEY);
+        const settings = isBlock ? BLOCK_CONFIG : { holdDelay: HOLD_DELAY, repeatInterval: REPEAT_INTERVAL };
+
+        if (!isBlock && config.speedMode === 0) return;
+
         document.dispatchEvent(new KeyboardEvent('keydown', {
-            key: currentMovementKey.replace('Key','').toLowerCase(),
+            key: currentMovementKey.replace('Key', '').toLowerCase(),
             code: currentMovementKey,
-            keyCode: getKeyCode(currentMovementKey),
+            keyCode: currentMovementKey.charCodeAt(3),
             bubbles: true,
             cancelable: true
         }));
-    }
 
-    function getKeyCode(key) {
-        const keyMap = {
-            'KeyA':65, 'KeyD':68, 'KeyW':87, 'KeyS':83,
-            'KeyQ':81, 'KeyE':69, 'KeyZ':90, 'KeyX':88
-        };
-        return keyMap[key] || 0;
+        if (isBlock) {
+            clearInterval(movementTimers.repeat);
+            movementTimers.repeat = setInterval(sendKeyPress, settings.repeatInterval);
+        }
     }
 
     function startMovementRepeat() {
-        if (!isMovementKeyDown || config.speedMode === 0) return;
+        if (!isMovementKeyDown || !isBattleModeActive || (currentMovementKey !== BLOCK_KEY && config.speedMode === 0)) return;
         sendKeyPress();
         movementTimers.repeat = setInterval(sendKeyPress, REPEAT_INTERVAL);
     }
@@ -1622,20 +1865,28 @@ arrows.forEach(arrow => {
     }
 
     document.addEventListener('keydown', e => {
-        if (MOVEMENT_KEYS.includes(e.code)) {
+        if (MOVEMENT_KEYS.includes(e.code) || e.code === BLOCK_KEY) {
             if (!isMovementKeyDown && !currentMovementKey) {
                 isMovementKeyDown = true;
                 currentMovementKey = e.code;
-                movementTimers.hold = setTimeout(startMovementRepeat, HOLD_DELAY);
+                const isBlock = (e.code === BLOCK_KEY);
+                const settings = isBlock ? BLOCK_CONFIG : { holdDelay: HOLD_DELAY, repeatInterval: REPEAT_INTERVAL };
+
+                if (!isBlock && config.speedMode === 0) return;
+
+                movementTimers.hold = setTimeout(() => {
+                    sendKeyPress();
+                    movementTimers.repeat = setInterval(sendKeyPress, settings.repeatInterval);
+                }, settings.holdDelay);
             }
         } else if (['KeyL','KeyJ'].includes(e.code) && !ARROW_KEYS[e.code]) {
             ARROW_KEYS[e.code] = true;
-            startArrowCheck();
+            if (config.arrowFixMode !== 0) startArrowCheck();
         }
     });
 
     document.addEventListener('keyup', e => {
-        if (MOVEMENT_KEYS.includes(e.code) && currentMovementKey === e.code) {
+        if ((MOVEMENT_KEYS.includes(e.code) || e.code === BLOCK_KEY) && currentMovementKey === e.code) {
             isMovementKeyDown = false;
             currentMovementKey = null;
             stopMovementRepeat();
@@ -1645,7 +1896,6 @@ arrows.forEach(arrow => {
         }
     });
 
-    // Запуск мода с проверкой фракции
     const waitForLoad = setInterval(() => {
         const ready = document.querySelector('#itemList');
         if (ready) {
